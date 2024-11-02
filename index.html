@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>create by.Rahmad</title>
+    <style>
+      /* Style dasar */
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: 'Arial', sans-serif;
+        background-color: #ffefef; /* Latar belakang cerah */
+        color: #ff4081; /* Teks berwarna cerah */
+        text-align: center;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      /* Tirai */
+      .curtain {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(90deg, #ffccf2, #ffb3d9);
+        display: flex;
+        transition: all 2s ease;
+        z-index: 10;
+      }
+
+      .curtain.left {
+        transform: translateX(0);
+      }
+
+      .curtain.right {
+        transform: translateX(0);
+      }
+
+      /* Konten yang muncul */
+      .content {
+        opacity: 0;
+        transform: scale(0.8);
+        transition: opacity 1s ease, transform 1s ease;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.9
+        ); /* Latar belakang putih transparan */
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0px 0px 15px rgba(255, 105, 180, 0.5); /* Bayangan lembut */
+      }
+
+      /* Countdown */
+      .countdown {
+        font-size: 2.5em;
+        opacity: 0;
+        color: #ff4081; /* Warna untuk countdown */
+        transition: opacity 1s ease;
+        font-weight: bold;
+      }
+
+      /* Gambar dan teks */
+      img {
+        width: 150px;
+        transition: transform 1s ease;
+        border-radius: 70%; /* Membuat gambar bulat */
+        border: 5px solid #ff4081; /* Border cerah */
+      }
+
+      h1,
+      h2 {
+        display: block;
+
+        font-size: 2em;
+        color: #ff4081; /* Teks cerah untuk judul */
+        font-weight: bold;
+        text-shadow: 2px 2px 5px rgba(255, 20, 147, 0.5); /* Efek bayangan pada teks */
+      }
+
+      /* Section */
+      section {
+        padding: 10px;
+        min-height: 100vh; /* Menjaga setiap section mengisi layar */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #ffe6f2; /* Latar belakang cerah untuk section */
+        border-top: 5px solid #ff4081; /* Border atas */
+        display: none; /* Menyembunyikan Section 2 */
+        position: relative; /* Tambahkan posisi relatif agar elemen love bisa diposisikan dengan benar */
+      }
+
+      /* Tampilkan Section 2 */
+      section.active {
+        display: flex; /* Menampilkan Section 2 */
+      }
+
+      .gallery {
+        max-width: 700px;
+
+        margin: 10px auto;
+
+        text-align: center;
+      }
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 15px;
+      }
+
+      .gallery-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 15px;
+        transition: transform 0.2s;
+      }
+
+      .gallery-item:hover {
+        transform: scale(1.05);
+      }
+
+      .gallery-item img {
+        width: 100%;
+        border-radius: 15px;
+        filter: brightness(0.9);
+        transition: filter 0.2s;
+      }
+
+      .gallery-item img:hover {
+        filter: brightness(1);
+        box-shadow: 0 4px 20px rgba(0,  0,  0,  0.3);
+      }
+      /* Animasi love */
+      .love {
+        position: absolute;
+        font-size: 5px;
+        opacity: 0;
+
+        animation: float 3s forwards;
+      }
+      .footer {
+        font-size: 10px;
+        color: #010200;
+      }
+
+      .footer p span {
+        color: #2461bd;
+        font-size: 10px;
+      }
+      /* Gaya untuk gambar agar memiliki animasi halus */
+      #photo {
+        position: absolute;
+        left: -300px;
+        width: 150px;
+        transition: left 3s ease-in-out, transform 1s ease;
+
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+      }
+      #photo:hover {
+        transform: scale(1.1) rotate(10deg);
+      }
+      /* Tombol gaya lucu dan animasi hover */
+      .tombol2 {
+        padding: 12px 24px;
+        font-size: 16px;
+        color: #fff;
+        background-color: #ab47bc;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0px 4px 15px rgba(171, 71, 188, 0.4);
+        transition: background-color 0.3s, transform 0.2s;
+      }
+      .tombol2:hover {
+        background-color: #8e24aa;
+        transform: scale(1.05);
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100px);
+          opacity: 0;
+        }
+      }
+
+      /* Penempatan Play Button di atas galeri */
+      #play-button {
+        margin-bottom: 20px; /* Jarak antara tombol dan galeri */
+        align-self: flex-start; /* Letakkan di bagian atas dari Section 2 */
+        position: sticky;
+        top: 0;
+        z-index: 10; /* Pastikan tombol tetap terlihat */
+        padding: 10px 15px;
+        font-size: 0.9em;
+        color: #ff4081;
+        background-color: white;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      #play-button:hover {
+        background-color: #ff4081; /* Warna latar saat hover */
+        color: white;
+      }
+      /* Responsif untuk layar ponsel */
+      @media (max-width: 768px) {
+        .content {
+          flex-direction: column;
+          gap: 10px;
+          padding: 15px;
+        }
+
+        .countdown {
+          font-size: 2em;
+        }
+
+        img {
+          width: 120px;
+        }
+
+        h1 {
+          font-size: 1.5em;
+        }
+
+        .gallery img {
+          width: 50%; /* Gambar mengisi seluruh lebar kolom */
+          border-radius: 10px; /* Kurangi radius border untuk tampilan lebih sederhana */
+        }
+        #photo {
+          width: 30%;
+        }
+      }
+      @media (max-width: 480px) {
+        .content {
+          flex-direction: column;
+          gap: 10px;
+          padding: 15px;
+        }
+
+        .countdown {
+          font-size: 2em;
+        }
+
+        img {
+          width: 120px;
+        }
+
+        h1 {
+          font-size: 1.5em;
+        }
+
+        .gallery img {
+          width: 50%; /* Gambar mengisi seluruh lebar kolom */
+          border-radius: 10px; /* Kurangi radius border untuk tampilan lebih sederhana */
+        }
+        #photo {
+          width: 30%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Tirai Kiri dan Kanan -->
+    <div class="curtain left"></div>
+    <div class="curtain right"></div>
+
+    <!-- Konten Tengah -->
+    <div class="content">
+      <img src="/img/hello.gif" alt="Cute Image" class="main-image" />
+      <div class="countdown">5</div>
+    </div>
+
+    <h1>rahmad ganteng amat</h1>
+
+    <!-- Section 2 -->
+    <section id="section2">
+      <h2>HALLO IBUKU SAYANG</h2>
+      <p>
+        Semangat ibuku yang kuat, semoga sebentar lagi Allah memberi kebahagiaan
+        sepanjang masa kepadamu
+      </p>
+      <button id="play-button" onclick="toggleMusic()">Putar Musik</button>
+      <div class="gallery">
+        <h1>Galeri Foto</h1>
+        <div class="gallery-grid">
+          <div class="gallery-item">
+            <img src="/img/D.JPG" class="f1" alt="Foto 1" />
+          </div>
+          <div class="gallery-item">
+            <img src="/img/E.jpg" class="f1" alt="Foto 2" />
+          </div>
+          <div class="gallery-item">
+            <img src="/img/B.png" class="f1" alt="Foto 3" />
+          </div>
+          <div class="gallery-item">
+            <img src="/img/C.png" class="f1" alt="Foto 4" />
+          </div>
+          <div class="gallery-item">
+            <img src="/img/1.png" class="f1" alt="Foto 5" />
+          </div>
+          <div class="gallery-item">
+            <img src="/img/A.png" class="f1" alt="Foto 6" />
+          </div>
+        </div>
+      </div>
+      <img src="img/Loco.gif" id="photo" alt="" />
+      <button class="tombol2" onclick="movePhoto()">PENCET DISINI</button>
+
+      <div class="footer">
+        <p><span>@ 2024</span>||Create by. Rahmad anjay</p>
+      </div>
+    </section>
+
+    <!-- Audio -->
+    <audio id="background-music" loop>
+      <source
+        src="/musik/SpotifyMate.com - Ibu - Haddad Alwi.mp3"
+        type="audio/mpeg"
+      />
+      Your browser does not support the audio element.
+    </audio>
+
+    <section id="section3">
+      <h2>I LOVE U</h2>
+    </section>
+
+    <script>
+      // Fungsi untuk membuka tirai
+      function openCurtain() {
+        document.querySelector('.curtain.left').style.transform =
+          'translateX(-100vw)';
+        document.querySelector('.curtain.right').style.transform =
+          'translateX(100vw)';
+
+        // Munculkan konten setelah tirai terbuka
+        setTimeout(() => {
+          document.querySelector('.content').style.opacity = '1';
+          document.querySelector('.content').style.transform = 'scale(1)';
+
+          // Mulai countdown setelah konten muncul
+          startCountdown();
+        }, 2000);
+      }
+
+      // Fungsi countdown
+      function startCountdown() {
+        let counter = 5;
+        const countdownElement = document.querySelector('.countdown');
+        const imageElement = document.querySelector('.main-image');
+
+        // Munculkan countdown
+        countdownElement.style.opacity = '1';
+
+        // Pindahkan gambar ke samping countdown
+        imageElement.style.transform = 'translateX(-50px)';
+
+        const interval = setInterval(() => {
+          countdownElement.textContent = counter;
+          counter--;
+
+          if (counter < 0) {
+            clearInterval(interval);
+            // Tampilkan Section 2 dan scroll ke sana setelah countdown selesai
+            document.getElementById('section2').classList.add('active');
+            document
+              .getElementById('section2')
+              .scrollIntoView({ behavior: 'smooth' });
+            // Tampilkan <h1> setelah countdown selesai
+            document.querySelector('h1').style.opacity = '1';
+          }
+        }, 1000);
+      }
+
+      // Fungsi untuk menampilkan love di Section 1
+      function showLoveInSection() {
+        const section1 = document.getElementById('section3');
+        const loveContainer = document.createElement('div');
+        loveContainer.classList.add('love');
+        loveContainer.textContent = '❤';
+        loveContainer.style.left = Math.random() * 90 + 'vw'; // Posisi horizontal acak
+        loveContainer.style.top = Math.random() * 80 + 'vh'; // Posisi vertikal acak
+        loveContainer.style.animationDuration = Math.random() * 2 + 2 + 's'; // Durasi acak
+        section1.appendChild(loveContainer);
+
+        // Menghapus elemen setelah animasi selesai
+      }
+
+      // Tampilkan love setiap 500ms di Section 1
+      setInterval(showLoveInSection, 500);
+
+      // Fungsi untuk mengontrol musik
+      let musicPlaying = false; // Status musik
+
+      function toggleMusic() {
+        const audio = document.getElementById('background-music');
+        if (musicPlaying) {
+          audio.pause();
+          document.getElementById('play-button').textContent = 'Putar Musik';
+        } else {
+          audio.play();
+          document.getElementById('play-button').textContent = 'Hentikan Musik';
+        }
+        musicPlaying = !musicPlaying; // Toggle status
+      }
+      function movePhoto() {
+        const photo = document.getElementById('photo');
+        const containerWidth = document.getElementById('section2').offsetWidth;
+
+        // Menggerakkan foto ke kanan
+        photo.style.left = `
+${containerWidth - photo.width}px`;
+
+        // Menunggu animasi selesai, lalu beralih ke section 2
+        setTimeout(() => {
+          document.getElementById('section2').style.display = 'none';
+          document.getElementById('section3').style.display = 'flex';
+        }, 3000); // Sesuaikan dengan durasi animasi transition
+      }
+
+      // Eksekusi fungsi ketika halaman dimuat
+      window.onload = () => {
+        openCurtain();
+      };
+    </script>
+  </body>
+</html>
